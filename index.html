@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Safe Drink Club — Protégez votre verre</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Safe Drink Club : couvercles avec QR pour sécuriser votre verre. Scannez et validez votre soirée.">
+</head>
+<body>
+  <header class="wrap">
+    <div class="brand">🍹 Safe <span>Drink</span> Club</div>
+    <nav>
+      <a href="index.html" class="active">Accueil</a>
+      <a href="scan.html">Scanner un code</a>
+      <a href="mailto:contact@safedrinkclub.example">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap hero">
+    <h1>Protégez votre verre.<br/>Vivez la nuit en confiance.</h1>
+    <p class="lead">
+      Safe Drink Club propose des couvercles numérotés et des QR uniques pour sécuriser les boissons dans les bars, clubs et festivals.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn primary" href="scan.html">Scanner un code</a>
+      <a class="btn ghost" href="#comment-ca-marche">Comment ça marche ?</a>
+    </div>
+
+    <section id="comment-ca-marche" class="cards">
+      <article>
+        <h3>Simple</h3>
+        <p>Prenez le couvercle, insérez la paille, scannez le QR. C’est tout.</p>
+      </article>
+      <article>
+        <h3>Sécurisé</h3>
+        <p>Chaque QR est unique. Le site confirme que le code appartient à votre appareil pendant la soirée.</p>
+      </article>
+      <article>
+        <h3>Communautaire</h3>
+        <p>En scannant, vous participez anonymement à la carte d’ambiance de la nuit (bientôt).</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <small>© <span id="year"></span> Safe Drink Club — Prototype</small>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

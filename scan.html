@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scanner un code — Safe Drink Club</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Librairie de scan (CDN) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <div class="brand">🍹 Safe <span>Drink</span> Club</div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="scan.html" class="active">Scanner un code</a>
+      <a href="mailto:contact@safedrinkclub.example">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap scan">
+    <h1>Scanner un code</h1>
+    <p class="lead">Autorisez la caméra, puis placez le QR dans le cadre.</p>
+
+    <div id="reader"></div>
+    <div id="result" class="result hidden">
+      <h3>Résultat</h3>
+      <p id="codeValue">—</p>
+      <p class="ok">✅ Code scanné. Ce prototype accepte tous les QR. <br/>Si votre QR contient <code>?code=…&place=…</code>, nous l’afficherons ci‑dessous.</p>
+      <div id="parsed"></div>
+    </div>
+
+    <section class="tip">
+      <details>
+        <summary>Pas de caméra ? Saisir un code manuellement</summary>
+        <form id="manual">
+          <input type="text" id="manualInput" placeholder="Collez une URL ou un code (ex: https://…?code=ABC123&place=NightShop)" />
+          <button class="btn primary" type="submit">Valider</button>
+        </form>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="wrap foot">
+    <small>© <span id="year"></span> Safe Drink Club — Prototype</small>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
