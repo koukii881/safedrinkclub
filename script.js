@@ -4,7 +4,25 @@
 const SUPABASE_URL = "https://abcd1234.supabase.co"; // ex: https://xxxxx.supabase.co
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 // ---------------------------------------------------
+const SUPABASE_URL = "https://abcd1234.supabase.co";
+const SUPABASE_ANON_KEY = "eyJh...";
 
+ // 👇 Tu colles ici, juste après cette ligne
+// Connexion à la base Supabase
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Fonction pour enregistrer un scan
+async function saveScan(code) {
+  const { data, error } = await supabase
+    .from('Scan')
+    .insert([{ code_qr: code }]);
+  if (error) {
+    console.error('Erreur lors de l’enregistrement :', error);
+  } else {
+    console.log('Scan enregistré avec succès !', data);
+  }
+}
 function getQueryParam(name) {
   const url = new URL(window.location.href);
   return url.searchParams.get(name);
