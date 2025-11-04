@@ -1,51 +1,110 @@
-(function(){
-  const readerEl = document.getElementById('reader');
-  const resultBox = document.getElementById('result');
-  const codeValue = document.getElementById('codeValue');
-  const parsed = document.getElementById('parsed');
+// --------- CONFIG (temporaire pour tester) ---------
+// ⚠️ Pour que ça marche tout de suite, colle tes vraies valeurs ici.
+// (On masquera mieux plus tard.)
+const SUPABASE_URL = "https://abcd1234.supabase.co"; // ex: https://xxxxx.supabase.co
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+// ---------------------------------------------------
 
-  function parseParamsFrom(urlOrCode){
-    try{
-      const u = new URL(urlOrCode);
-      const code = u.searchParams.get('code');
-      const place = u.searchParams.get('place');
-      let out = '';
-      if(code) out += `<p><strong>Code :</strong> ${code}</p>`;
-      if(place) out += `<p><strong>Point de vente :</strong> ${place}</p>`;
-      return out || '<em>Aucun paramètre ?code= ou ?place= détecté.</em>';
-    }catch(e){
-      return '<em>Texte simple détecté (pas une URL). Ce prototype valide tous les codes.</em>';
+function getQueryParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
+
+const codeEl = document.getElementById('codeValue');
+const parsedEl = document.getElementById('parsed');
+const statusEl = document.getElementById('status');
+const saveBtn = document.getElementById('saveBtn');
+
+let CURRENT = {
+  code: null,
+  lat: null,
+  lng: null,
+  place: null
+};
+
+// 1) Récupère ?code=... et affiche
+function initFromUrl() {
+  const code = getQueryParam('code');
+  if (code) {
+    CURRENT.code = code.trim();
+    codeEl.textContent = CURRENT.code;
+    parsedEl.innerHTML = `<p><strong>Code détecté :</strong> ${CURRENT.code}</p>`;
+  } else {
+    parsedEl.innerHTML = `<p>Aucun code dans l'URL. Ajoute <code>?code=SDP001</code> par exemple.</p>`;
+  }
+}
+initFromUrl();
+
+// 2) Demande la géolocalisation
+function askLocation() {
+  if (!navigator.geolocation) {
+    statusEl.textContent = "La géolocalisation n'est pas supportée sur cet appareil.";
+    return;
+  }
+  statusEl.textContent = "Demande de géolocalisation…";
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      CURRENT.lat = pos.coords.latitude;
+      CURRENT.lng = pos.coords.longitude;
+      statusEl.textContent = "Position récupérée ✅";
+      parsedEl.insertAdjacentHTML(
+        'beforeend',
+        `<p><strong>Position :</strong> ${CURRENT.lat.toFixed(5)}, ${CURRENT.lng.toFixed(5)}</p>`
+      );
+      saveBtn.disabled = false;
+    },
+    (err) => {
+      statusEl.textContent = "Impossible d'obtenir la position (permission refusée ?)";
+      saveBtn.disabled = true;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+askLocation();
+
+// 3) Enregistre dans Supabase (table 'scans')
+async function saveToSupabase() {
+  if (!CURRENT.code) {
+    statusEl.textContent = "Pas de code à enregistrer.";
+    return;
+  }
+  statusEl.textContent = "Enregistrement…";
+
+  const payload = {
+    code_qr: CURRENT.code,
+    latitude: CURRENT.lat,
+    longitude: CURRENT.lng,
+    place: CURRENT.place // reste null pour le moment
+  };
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/scans`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || `HTTP ${res.status}`);
     }
-  }
 
-  function onScanSuccess(decodedText){
-    codeValue.textContent = decodedText;
-    parsed.innerHTML = parseParamsFrom(decodedText);
-    resultBox.classList.remove('hidden');
+    const data = await res.json();
+    statusEl.textContent = "Enregistré ✅";
+    parsedEl.insertAdjacentHTML(
+      'beforeend',
+      `<p><em>Ligne Supabase créée (id: ${data[0]?.id ?? "?"}).</em></p>`
+    );
+  } catch (e) {
+    statusEl.textContent = "Erreur d'enregistrement : " + e.message;
   }
+}
 
-  if (window.Html5Qrcode && readerEl){
-    const html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 260, height: 260 } };
-    Html5Qrcode.getCameras().then(cams => {
-      const cameraId = (cams && cams.length) ? cams[0].id : null;
-      if(cameraId){
-        html5QrCode.start(cameraId, config, onScanSuccess);
-      }else{
-        readerEl.innerHTML = '<p>Caméra indisponible. Utilisez la saisie manuelle ci-dessous.</p>';
-      }
-    }).catch(err => {
-      readerEl.innerHTML = '<p>Accès caméra refusé. Utilisez la saisie manuelle ci-dessous.</p>';
-    });
-  }
-
-  const form = document.getElementById('manual');
-  if(form){
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const val = document.getElementById('manualInput').value.trim();
-      if(!val) return;
-      onScanSuccess(val);
-    });
-  }
-})();
+if (saveBtn) {
+  saveBtn.addEventListener('click', saveToSupabase);
+}
