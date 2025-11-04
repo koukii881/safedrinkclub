@@ -52,3 +52,26 @@
   </script>
 </body>
 </html>
+<!-- Scanner de code QR -->
+<div id="reader" style="width:300px;margin:auto;"></div>
+<p id="result" style="text-align:center;font-weight:bold;color:white;"></p>
+
+<script src=" https://unpkg.com/html5-qrcode "></script>
+<script>
+fonction onScanSuccess(decodedText, decodedResult) {
+// Affichez le code détecté
+document.getElementById("result").innerText = "Code détecté : " + decodedText;
+// Redirige vers la page avec le code
+window.location.href = "scan.html?code=" + encodeURIComponent(decodedText);
+}
+
+fonction onScanFailure(erreur) {
+console.warn(`Erreur de lecture : ${error}`);
+}
+
+let html5QrcodeScanner = new Html5QrcodeScanner(
+"lecteur",
+{ fps: 10, qrbox: 250 }
+);
+html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+</script>
