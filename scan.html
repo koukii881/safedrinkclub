@@ -7,9 +7,16 @@
   <link rel="stylesheet" href="style.css" />
   <!-- Librairie de scan (CDN) -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
-</head>
+</head><!-- ton autre contenu -->
+<div id="reader" style="width:300px;margin:auto;"></div>
+<p id="result" style="text-align:center;font-weight:bold;color:white;"></p>
+
+
 <body>
-  <header class="wrap">
+ <!-- le bouton de géolocalisation -->
+<button id="geo-btn" onclick="askGeo()" style="margin:16px 0;">
+Activer la géolocalisation
+ <header class="wrap">
     <div class="brand">🍹 Safe <span>Drink</span> Club</div>
     <nav>
       <a href="index.html">Accueil</a>
