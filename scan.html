@@ -74,4 +74,31 @@ let html5QrcodeScanner = new Html5QrcodeScanner(
 { fps: 10, qrbox: 250 }
 );
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+</script> <!-- Script pour activer la caméra -->
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+  const html5QrCode = new Html5Qrcode("reader");
+  const config = { fps: 10, qrbox: 250 };
+
+  Html5Qrcode.getCameras().then(cameras => {
+    if (cameras && cameras.length) {
+      html5QrCode.start(
+        { facingMode: "environment" }, // caméra arrière
+        config,
+        qrCodeMessage => {
+          console.log(`QR Code détecté: ${qrCodeMessage}`);
+          alert("Code détecté : " + qrCodeMessage);
+        },
+        errorMessage => {
+          console.warn(`Erreur : ${errorMessage}`);
+        }
+      );
+    } else {
+      alert("Aucune caméra détectée !");
+    }
+  }).catch(err => {
+    console.error("Erreur d'accès caméra :", err);
+    alert("Impossible d'accéder à la caméra !");
+  });
 </script>
+
