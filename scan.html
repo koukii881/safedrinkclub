@@ -100,5 +100,28 @@ html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     console.error("Erreur d'accès caméra :", err);
     alert("Impossible d'accéder à la caméra !");
   });
+</script><script>
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code');
+
+si (code && code.toUpperCase() === 'GEOLOC') {
+si (navigateur.géolocalisation) {
+navigateur.géolocation.getCurrentPosition(
+fonction(position) {
+alerte(
+"✅ Géolocalisation activée !\n" +
+"Latitude : " + position.coords.latitude + "\n" +
+"Longitude : " + position.coords.longitude
+);
+},
+fonction(erreur) {
+alert("⚠️ Impossible d'obtenir la position : " + error.message);
+}
+);
+} autre {
+alert("⚠️ La géolocalisation n'est pas supportée sur ce navigateur.");
+}
+}
 </script>
+
 
